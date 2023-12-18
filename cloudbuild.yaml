@@ -1,0 +1,27 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/mm-etl-poc/gnupg-new:latest', '.' ]
+
+  # Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'gcr.io/mm-etl-poc/gnupg-new:latest' ]
+
+  # Deploy as a cloud run service
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'gpg-decryptor'
+      - '--image=gcr.io/mm-etl-poc/gnupg-new:latest'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--ingress=all'
+      - '--service-account=kms-importer@mm-etl-poc.iam.gserviceaccount.com'
+      - '--set-env-vars=PROJECT_ID=mm-etl-poc'
+      - '--set-env-vars=PRIVATE_KEY_SECRET_ID=gnupg-pvt'
+      - '--set-env-vars=GPG_KEY_FINGERPRINTS=81B7D836220A71C731DADAEF44803D875F3CFB84'
+      - '--set-env-vars=GPG_RECIPIENT=abhishekanand.78@gmail.com'
+      - '--set-env-vars=DESTINATION_BUCKET_NAME=ver_dec_file'
