@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_IMAGE_TAG }} .
+
+    - name: Push Docker image to Artifact Registry
+      run: |
+        echo ${{ secrets.GCLOUD_SERVICE_KEY }} > gcloud-service-key.json
+        docker login -u _json_key --password-stdin https://europe-west2-docker.pkg.dev < gcloud-service-key.json
+        docker push ${{ secrets.DOCKER_IMAGE_TAG }}
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud auth activate-service-account --key-file=gcloud-service-key.json
+        gcloud run deploy gpg-decryptor \
+          --image=${{ secrets.DOCKER_IMAGE_TAG }} \
+          --platform=managed \
+          --region=${{ secrets.CLOUD_RUN_REGION }} \
+          --no-allow-unauthenticated \
+          --ingress=internal \
+          --service-account=${{ secrets.CLOUD_RUN_SERVICE_ACCOUNT }} \
+          --set-env-vars=PROJECT_ID=${{ secrets.GCP_PROJECT_ID }},PRIVATE_KEY_SECRET_ID=${{ secrets.GCP_PRIVATE_KEY_SECRET_ID }},GPG_KEY_FINGERPRINTS=${{ secrets.GCP_GPG_KEY_FINGERPRINTS }},GPG_RECIPIENT=${{ secrets.GCP_GPG_RECIPIENT }},DESTINATION_BUCKET_NAME=${{ secrets.GCP_DESTINATION_BUCKET_NAME }}
+
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_PRIVATE_KEY_SECRET_ID: ${{ secrets.GCP_PRIVATE_KEY_SECRET_ID }}
+      GCP_GPG_KEY_FINGERPRINTS: ${{ secrets.GCP_GPG_KEY_FINGERPRINTS }}
+      GCP_GPG_RECIPIENT: ${{ secrets.GCP_GPG_RECIPIENT }}
+      GCP_DESTINATION_BUCKET_NAME: ${{ secrets.GCP_DESTINATION_BUCKET_NAME }}
+      DOCKER_IMAGE_TAG: europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}/${{ secrets.GCP_IMAGE_NAME }}:${{ github.sha }}
+      CLOUD_RUN_REGION: us-central1
+      CLOUD_RUN_SERVICE_ACCOUNT: ${{ secrets.CLOUD_RUN_SERVICE_ACCOUNT }}

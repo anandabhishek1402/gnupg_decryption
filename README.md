@@ -1,0 +1,1 @@
+https://github.com/rocketechgroup/cloud-run-gpg-decryptor
