@@ -2,15 +2,15 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "final" ]
 
 env:
   PROJECT_ID: "abhishek-anand-dev" # TODO: update Google Cloud project id
   GAR_LOCATION: "us-central1" # TODO: update Artifact Registry location
   SERVICE: "gpg_decryption" # TODO: update Cloud Run service name
   REGION: "us-central1" # TODO: update Cloud Run service region
-  ENV_VAR1: VALUE1 # TODO: update your environment variables
-  ENV_VAR2: VALUE2
+  ENV_VAR1: "VALUE1" # TODO: update your environment variables
+  ENV_VAR2: "VALUE2"
 
 jobs:
   deploy:
