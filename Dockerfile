@@ -27,11 +27,11 @@ RUN python -m venv venv
 RUN /bin/bash -c "source venv/bin/activate && pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt"
 
 # Copy the application code
-COPY decryptor.py .
+COPY main.py .
 COPY gunicorn_config.py .
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Start Gunicorn with the app module
-CMD ["/home/app/venv/bin/gunicorn", "--config", "gunicorn_config.py", "decryptor:app"]
+CMD ["/home/app/venv/bin/gunicorn", "--config", "gunicorn_config.py", "main:app"]
