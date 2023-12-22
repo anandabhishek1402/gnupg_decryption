@@ -49,4 +49,4 @@ jobs:
             PROJECT_ID=${{ env.PROJECT_ID }}
             GPG_SECRET_ID=${{ env.GPG_SECRET_ID }}
             PASPPHRASE_SECRET_ID=${{ env.PASPPHRASE_SECRET_ID }}
-            DESTINATION_BUCKET: ${{ env.DESTINATION_BUCKET }}
+            DESTINATION_BUCKET= ${{ env.DESTINATION_BUCKET }}
