@@ -14,6 +14,7 @@ from flask import Flask, request
 def access_secret_version(project_id, secret_id, version_id):
     try:
         # Access the secret version
+        client = secretmanager.SecretManagerServiceClient()
         response = client.access_secret_version(request={"name": name})
 
         # Get the secret payload as a string
