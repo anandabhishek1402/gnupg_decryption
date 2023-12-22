@@ -2,7 +2,7 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [ "final" ]
+    branches: [ "dev" ]
 
 env:
   PROJECT_ID: "abhishek-anand-dev" # TODO: update Google Cloud project id
