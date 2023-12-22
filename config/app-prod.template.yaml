@@ -14,3 +14,11 @@ spec:
         env:
           - name: 'TARGET'
             value: 'Prod'
+          - name: 'PROJECT_ID'
+            value: ${PROJECT_ID}
+          - name: GPG_SECRET_ID: 
+            value: {GPG_SECRET_ID}#"gpgkey" # TODO: update your environment variables
+          - name: PASPPHRASE_SECRET_ID
+            value: ${PASPPHRASE_SECRET_ID}
+          - name: DESTINATION_BUCKET: 
+            value: ${DESTINATION_BUCKET}#"gpg_buckets_abhi"
