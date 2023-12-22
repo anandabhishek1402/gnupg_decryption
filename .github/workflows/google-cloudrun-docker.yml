@@ -43,7 +43,7 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           allow_unauthenticated: true
-          image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}"
           env_vars: |
             PROJECT_ID=${{ env.PROJECT_ID }}
             GPG_SECRET_ID=${{ env.GPG_SECRET_ID }}
