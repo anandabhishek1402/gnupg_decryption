@@ -12,6 +12,7 @@ env:
   IMAGE: "gpg"
   GPG_SECRET_ID: "gpgkey" # TODO: update your environment variables
   PASPPHRASE_SECRET_ID: "Passphrase"
+  DESTINATION_BUCKET: "gpg_buckets_abhi"
 
 jobs:
   deploy:
@@ -48,3 +49,4 @@ jobs:
             PROJECT_ID=${{ env.PROJECT_ID }}
             GPG_SECRET_ID=${{ env.GPG_SECRET_ID }}
             PASPPHRASE_SECRET_ID=${{ env.PASPPHRASE_SECRET_ID }}
+            DESTINATION_BUCKET: ${{ env.DESTINATION_BUCKET }}
