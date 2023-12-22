@@ -10,8 +10,8 @@ env:
   SERVICE: "gpg-decryption" # TODO: update Cloud Run service name
   REGION: "us-central1" # TODO: update Cloud Run service region
   IMAGE: "gpg"
-  ENV_VAR1: "VALUE1" # TODO: update your environment variables
-  ENV_VAR2: "VALUE2"
+  GPG_SECRET_ID: "gpgkey" # TODO: update your environment variables
+  PASPPHRASE_SECRET_ID: "Passphrase"
 
 jobs:
   deploy:
@@ -37,12 +37,13 @@ jobs:
           gcloud builds submit --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE}}:${{ github.sha }}" .
 
       # Deploy to Cloud Run with environment variables
-      # - name: Deploy to Cloud Run
-      #   uses: google-github-actions/deploy-cloudrun@v0
-      #   with:
-      #     service: ${{ env.SERVICE }}
-      #     region: ${{ env.REGION }}
-      #     image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
-      #     env_vars: |
-      #       ENV_VAR1=${{ env.ENV_VAR1 }}
-      #       ENV_VAR2=${{ env.ENV_VAR2 }}
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          env_vars: |
+            PROJECT_ID=${{ env.PROJECT_ID }}
+            GPG_SECRET_ID=${{ env.GPG_SECRET_ID }}
+            PASPPHRASE_SECRET_ID=${{ env.PASPPHRASE_SECRET_ID }}
