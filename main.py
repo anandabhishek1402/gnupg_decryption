@@ -124,6 +124,7 @@ def index():
 
         decrypt_from_gcs(source_bucket_name, source_blob_name)
         upload_decrypted_to_gcs(os.getenv("DESTINATION_BUCKET"), source_blob_name )
+        return 'OK', 200
         
     except Exception as e:
         print(f"Error during request handling: {e}")
