@@ -2,7 +2,7 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "final" ]
 
 env:
   PROJECT_ID: "abhishek-anand-dev" # TODO: update Google Cloud project id
@@ -13,6 +13,7 @@ env:
   GPG_SECRET_ID: "gpgkey" # TODO: update your environment variables
   PASPPHRASE_SECRET_ID: "Passphrase"
   DESTINATION_BUCKET: "gpg_buckets_abhi"
+  APP: app
 
 jobs:
   deploy:
@@ -37,10 +38,10 @@ jobs:
         run: |-
           gcloud builds submit --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE}}:${{ github.sha }}" .
 
-       name: 'Render templatised config manifests'
+      - name: 'Render templatised config manifests'
         run: |-
           export PROJECT_ID="${{ env.PROJECT_ID }}"
-          export REGION="${{ env.REGION }}"
+          export REGION="${{ env.GAR_LOCATION }}"
           for template in $(ls config/*.template.yaml); do envsubst < ${template} > ${template%%.*}.yaml ; done
 
       - name: 'Create Cloud Deploy delivery pipeline'
@@ -57,10 +58,10 @@ jobs:
         with:
           delivery_pipeline: '${{ env.APP }}'
           name: '${{ env.RELEASE_NAME }}'
-          region: '${{ env.REGION }}'
-          description: '${{ env.GITHUB_COMMIT_MSG }}'
+          region: '${{ env.GAR_LOCATION }}'
+          #description: '${{ env.GITHUB_COMMIT_MSG }}'
           skaffold_file: 'config/skaffold.yaml'
-          images: 'app=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ github.sha }}'
+          images: 'app=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}'
 
       - name: 'Report Cloud Deploy release'
         run: |-
