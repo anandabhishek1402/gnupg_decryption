@@ -80,7 +80,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
             "Passphrase",
             "latest"
             )
-        pp1 = pp1.response.payload
+        #pp1 = pp1.response.payload
         print("PP1 :{}".format(pp1))
         pp = decrypt_key("abhishek-anand-dev", "global", "gnupg_passphrase", "clidemo", pp1)
         print("PP :{}".format(pp))
