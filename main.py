@@ -37,7 +37,22 @@ def access_secret_version(project_id, secret_id, version_id):
     except Exception as e:
         print(f"Error accessing secret version: {e}")
         return None
+        
+def access_secret_version1(project_id, secret_id, version_id):
+    try:
+        # Access the secret version
+        client = secretmanager.SecretManagerServiceClient()
+    
+        # Build the resource name of the secret version
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
 
+        response = client.access_secret_version(request={"name": name})
+
+        # Get the secret payload as a string
+        # secret_data = response.payload.data.decode("UTF-8")
+        #print({"Secret Data :{}".format(secret_data)})
+        return response.payload.data
+        
 def read_gcs_file_to_string(bucket_name, source_blob_name):
     try:
         # Initialize the GCS client
@@ -69,7 +84,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         # Ensure encrypted_data is bytes
         encrypted_bytes = bytes(encrypted_data, 'utf-8')
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
-        pp = access_secret_version(
+        pp = access_secret_version1(
             os.getenv("PROJECT_ID"),
             os.getenv("PASPPHRASE_SECRET_ID"),
             "latest"
@@ -119,7 +134,6 @@ encrypted_private_key = access_secret_version(
 )
 # decoded_key = base64.b64decode(encrypted_private_key)
 private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", encrypted_private_key)
-
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
 def index():
