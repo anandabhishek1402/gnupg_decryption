@@ -118,7 +118,7 @@ encrypted_private_key = access_secret_version(
     "latest"
 )
 # decoded_key = base64.b64decode(encrypted_private_key)
-private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", decoded_key)
+private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", encrypted_private_key)
 
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
