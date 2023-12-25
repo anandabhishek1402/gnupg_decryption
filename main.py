@@ -49,9 +49,9 @@ def access_secret_version1(project_id, secret_id, version_id):
         response = client.access_secret_version(request={"name": name})
 
         # Get the secret payload as a string
-        # secret_data = response.payload.data.decode("UTF-8")
-        #print({"Secret Data :{}".format(secret_data)})
-        return response.payload.data
+        secret_data = response.payload.data.decode("UTF-8")
+        print({"Secret Data :{}".format(secret_data)})
+        return secret_data
         
     except Exception as e:
         print(f"Error during accessing secret key from secret manager: {e}")
