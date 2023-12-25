@@ -96,6 +96,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
             f.write(decrypted_data.data)
 
         print("Decrypted data written to /tmp/decrypted_data.txt")
+        return decrypted_data
     except Exception as e:
         print(f"Error during decryption from GCS: {e}")
         return None
@@ -140,7 +141,10 @@ def index():
         print(f"Processing file: {source_blob_name}")
         print(f"Bucket Name: {source_bucket_name}")
 
-        decrypt_from_gcs(source_bucket_name, source_blob_name)
+        decrypted_data = decrypt_from_gcs(source_bucket_name, source_blob_name)
+        if not decrypted_data:
+            raise RuntimeError('Cannot decrypt data...')
+        
         upload_decrypted_to_gcs("gpg_buckets_abhi", source_blob_name )
         return 'OK', 200
         
