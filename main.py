@@ -31,33 +31,15 @@ def access_secret_version(project_id, secret_id, version_id):
         response = client.access_secret_version(request={"name": name})
 
         # Get the secret payload as a string
+        secret_data = response.payload.data
         # secret_data = response.payload.data.decode("UTF-8")
         #print({"Secret Data :{}".format(secret_data)})
-        return response.payload.data
+        return secret_data
         
     except Exception as e:
         print(f"Error accessing secret version: {e}")
         return None
-        
-# def access_secret_version1(project_id, secret_id, version_id):
-#     try:
-#         # Access the secret version
-#         client = secretmanager.SecretManagerServiceClient()
     
-#         # Build the resource name of the secret version
-#         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-
-#         response = client.access_secret_version(request={"name": name})
-
-#         # Get the secret payload as a string
-          secret_data = response.payload.data
-#         secret_data = response.payload.data.decode("UTF-8")
-#         print({"Secret Data :{}".format(secret_data)})
-          return secret_data
-        
-#     except Exception as e:
-#         print(f"Error during accessing secret key from secret manager: {e}")
-#         return None
         
 def read_gcs_file_to_string(bucket_name, source_blob_name):
     try:
@@ -71,7 +53,7 @@ def read_gcs_file_to_string(bucket_name, source_blob_name):
         blob = bucket.blob(source_blob_name)
 
         # Read the file content as a string
-        file_content = blob.download_as_text()
+        file_content = blob.download_as_text() #str
 
         return file_content
     
@@ -89,7 +71,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("Length of encrypted data:", len(encrypted_data))
 
         # Ensure encrypted_data is bytes
-        encrypted_bytes = bytes(encrypted_data, 'utf-8')
+        encrypted_bytes = bytes(encrypted_data, 'utf-8') #bytes
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
             os.getenv("PROJECT_ID"),
@@ -100,7 +82,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         pp = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", pp1)
         print("Passphrase: {}".format(pp))
         # Decrypt the data
-        decrypted_data = gpg.decrypt(encrypted_bytes, passphrase=pp)
+        decrypted_data = gpg.decrypt(encrypted_bytes, passphrase=pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
         print("Decrypted Data")
         print(decrypted_data)
