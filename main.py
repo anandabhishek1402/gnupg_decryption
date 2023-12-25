@@ -16,7 +16,7 @@ def decrypt_key(project_id, location, keyring_id, key_id, ciphertext):
     client = kms.KeyManagementServiceClient()
     name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}"
     response = client.decrypt(name=name, ciphertext=ciphertext)
-    return response.plaintext
+    return response.plaintext.decode('utf-8')
 
 
 def access_secret_version(project_id, secret_id, version_id):
@@ -87,13 +87,14 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("Length of encrypted data:", len(encrypted_data))
 
         # Ensure encrypted_data is bytes
-        encrypted_bytes = bytes(encrypted_data) # , 'utf-8')
+        encrypted_bytes = bytes(encrypted_data, 'utf-8')
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
             os.getenv("PROJECT_ID"),
             os.getenv("PASPPHRASE_SECRET_ID"),
             "latest"
             )
+        pp1 = pp1.response.payload
         pp = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", pp1)
         print("Passphrase: {}".format(pp))
         # Decrypt the data
