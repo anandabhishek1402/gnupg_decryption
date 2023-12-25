@@ -33,6 +33,8 @@ def access_secret_version(project_id, secret_id, version_id):
         # secret_data = response.payload.data.decode("UTF-8")
         #print({"Secret Data :{}".format(secret_data)})
         return response.payload.data
+    except Exception as e:
+        print(f"Error during accessing secret key from GCS: {e}")
         
     except Exception as e:
         print(f"Error accessing secret version: {e}")
@@ -52,6 +54,9 @@ def access_secret_version1(project_id, secret_id, version_id):
         # secret_data = response.payload.data.decode("UTF-8")
         #print({"Secret Data :{}".format(secret_data)})
         return response.payload.data
+    except Exception as e:
+        print(f"Error during accessing secret key from secret manager: {e}")
+        return None
         
 def read_gcs_file_to_string(bucket_name, source_blob_name):
     try:
@@ -68,6 +73,7 @@ def read_gcs_file_to_string(bucket_name, source_blob_name):
         file_content = blob.download_as_text()
 
         return file_content
+    
     except Exception as e:
         print(f"Error reading GCS file: {e}")
         return None
