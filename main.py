@@ -87,7 +87,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("Length of encrypted data:", len(encrypted_data))
 
         # Ensure encrypted_data is bytes
-        encrypted_bytes = bytes(encrypted_data, 'utf-8')
+        encrypted_bytes = bytes(encrypted_data) # , 'utf-8')
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
             os.getenv("PROJECT_ID"),
