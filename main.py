@@ -71,7 +71,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("Length of encrypted data:", len(encrypted_data))
 
         # Ensure encrypted_data is bytes
-        encrypted_bytes = bytes(encrypted_data, 'utf-8') #bytes
+        # encrypted_bytes = bytes(encrypted_data, 'utf-8') #bytes
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
             os.getenv("PROJECT_ID"),
@@ -82,7 +82,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         pp = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", pp1)
         print("Passphrase: {}".format(pp))
         # Decrypt the data
-        decrypted_data = gpg.decrypt(encrypted_bytes, passphrase=pp.replace('\n', '')) #To remove \n from end
+        decrypted_data = gpg.decrypt(encrypted_data passphrase=pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
         print("Decrypted Data")
         print(decrypted_data)
