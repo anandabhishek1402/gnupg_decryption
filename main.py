@@ -86,7 +86,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("PP :{}".format(pp))
         print("Passphrase: {}".format(pp))
         # Decrypt the data
-        decrypted_data = gpg.decrypt(encrypted_data, passphrase = "Fossil.4" ) #pp.replace('\n', '')) #To remove \n from end
+        decrypted_data = gpg.decrypt(encrypted_data, passphrase = pp ) #pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
         print("Decrypted Data")
         print(decrypted_data)
@@ -96,10 +96,16 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
             return None
 
         # Write the decrypted data to a file
-        with open('/tmp/decrypted_data.txt', 'wb') as f:
-            f.write(decrypted_data.data)
+        # with open('/tmp/decrypted_data.txt', 'wb') as f:
+        #     f.write(decrypted_data.data)
 
-        print("Decrypted data written to /tmp/decrypted_data.txt")
+        # print("Decrypted data written to /tmp/decrypted_data.txt")
+        # return decrypted_data
+        with open('/tmp/decrypted_data.csv', 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(decrypted_data.data.split(','))  # Assuming data is comma-separated
+
+        print("Decrypted data written to /tmp/decrypted_data.csv")
         return decrypted_data
     except Exception as e:
         print(f"Error during decryption from GCS: {e}")
