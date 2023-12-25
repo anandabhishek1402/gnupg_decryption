@@ -16,7 +16,8 @@ def decrypt_key(project_id, location, keyring_id, key_id, ciphertext):
     client = kms.KeyManagementServiceClient()
     name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}"
     response = client.decrypt(name=name, ciphertext=ciphertext)
-    return response.plaintext.decode('utf-8')
+    decoded_response = response.plaintext.decode('utf-8')
+    return decoded_response
 
 
 def access_secret_version(project_id, secret_id, version_id):
@@ -49,9 +50,10 @@ def access_secret_version(project_id, secret_id, version_id):
 #         response = client.access_secret_version(request={"name": name})
 
 #         # Get the secret payload as a string
+          secret_data = response.payload.data
 #         secret_data = response.payload.data.decode("UTF-8")
 #         print({"Secret Data :{}".format(secret_data)})
-#         return secret_data
+          return secret_data
         
 #     except Exception as e:
 #         print(f"Error during accessing secret key from secret manager: {e}")
@@ -132,8 +134,8 @@ def upload_decrypted_to_gcs(destination_bucket, source_blob_name):
         print(f"Error during uploading decrypted file to GCS: {e}")
     
 
-app = Flask(__name__)
 
+app = Flask(__name__)
 # Set up GnuPG instance
 gpg = gnupg.GPG()
 encrypted_private_key = access_secret_version(
@@ -141,7 +143,6 @@ encrypted_private_key = access_secret_version(
     os.getenv("GPG_SECRET_ID"),
     "latest"
 )
-# decoded_key = base64.b64decode(encrypted_private_key)
 private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", encrypted_private_key)
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
