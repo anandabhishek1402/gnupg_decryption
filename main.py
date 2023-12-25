@@ -103,8 +103,8 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
 def upload_decrypted_to_gcs(destination_bucket, source_blob_name):
     try:
         storage_client = storage.Client()
-        destination_bucket_name = destination_bucket  # Use environment variable for destination bucket
-        destination_blob_name = f'decrypted/{source_blob_name}'  # Modify as needed for the destination path
+        destination_bucket_name = destination_bucket # Use environment variable for destination bucket
+        destination_blob_name = f'new_decrypted/{source_blob_name}'  # Modify as needed for the destination path
         destination_bucket = storage_client.bucket(destination_bucket_name)
         destination_blob = destination_bucket.blob(destination_blob_name)
     
@@ -141,7 +141,7 @@ def index():
         print(f"Bucket Name: {source_bucket_name}")
 
         decrypt_from_gcs(source_bucket_name, source_blob_name)
-        upload_decrypted_to_gcs(os.getenv("DESTINATION_BUCKET"), source_blob_name )
+        upload_decrypted_to_gcs("gpg_buckets_abhi", source_blob_name )
         return 'OK', 200
         
     except Exception as e:
