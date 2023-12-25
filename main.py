@@ -17,6 +17,7 @@ def decrypt_key(project_id, location, keyring_id, key_id, ciphertext):
     name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}"
     response = client.decrypt(name=name, ciphertext=ciphertext)
     decoded_response = response.plaintext.decode('utf-8')
+    print("Decoded Response :{}".format(decoded_response))
     return decoded_response
 
 
@@ -32,6 +33,7 @@ def access_secret_version(project_id, secret_id, version_id):
 
         # Get the secret payload as a string
         secret_data = response.payload.data
+        print("Secret Data : {}".format(secret_data))
         # secret_data = response.payload.data.decode("UTF-8")
         #print({"Secret Data :{}".format(secret_data)})
         return secret_data
@@ -66,7 +68,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         # Read encrypted data from GCS
         encrypted_data = read_gcs_file_to_string(bucket_name, source_blob_name)
         print("Inside Decrypt from GCS")
-        print("Encrypted data:")
+        print("Encrypted data: {}".format(encrypted_data))
         # Print the length of encrypted data
         print("Length of encrypted data:", len(encrypted_data))
 
@@ -74,15 +76,17 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         # encrypted_bytes = bytes(encrypted_data, 'utf-8') #bytes
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
-            os.getenv("PROJECT_ID"),
-            os.getenv("PASPPHRASE_SECRET_ID"),
+            "abhishek-anand-dev",
+            "Passphrase",
             "latest"
             )
         pp1 = pp1.response.payload
-        pp = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", pp1)
+        print("PP1 :{}".format(pp1))
+        pp = decrypt_key("abhishek-anand-dev", "global", "gnupg_passphrase", "clidemo", pp1)
+        print("PP :{}".format(pp))
         print("Passphrase: {}".format(pp))
         # Decrypt the data
-        decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp.replace('\n', '')) #To remove \n from end
+        decrypted_data = gpg.decrypt(encrypted_data, passphrase = "Fossil.4" ) #pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
         print("Decrypted Data")
         print(decrypted_data)
@@ -127,6 +131,7 @@ encrypted_private_key = access_secret_version(
     "latest"
 )
 private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", encrypted_private_key)
+print("Private Key :{}".format(private_key))
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
 def index():
