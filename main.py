@@ -31,7 +31,7 @@ def access_secret_version(project_id, secret_id, version_id):
 
         # Get the secret payload as a string
         # secret_data = response.payload.data.decode("UTF-8")
-        print({"Secret Data :{}".format(secret_data)})
+        #print({"Secret Data :{}".format(secret_data)})
         return response.payload.data
         
     except Exception as e:
