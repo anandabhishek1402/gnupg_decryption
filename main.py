@@ -12,9 +12,9 @@ from cloudevents.http import from_http
 
 from flask import Flask, request
 
-def decrypt_key(project_id, location, keyring_id, key_id, version_id, ciphertext):
+def decrypt_key(project_id, location, keyring_id, key_id, ciphertext):
     client = kms.KeyManagementServiceClient()
-    name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}/cryptoKeyVersions/{version_id}"
+    name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}"
     response = client.decrypt(name=name, ciphertext=ciphertext)
     return response.plaintext
 
@@ -30,9 +30,10 @@ def access_secret_version(project_id, secret_id, version_id):
         response = client.access_secret_version(request={"name": name})
 
         # Get the secret payload as a string
-        secret_data = response.payload.data.decode("UTF-8")
+        # secret_data = response.payload.data.decode("UTF-8")
         print({"Secret Data :{}".format(secret_data)})
-        return secret_data
+        return response.payload.data
+        
     except Exception as e:
         print(f"Error accessing secret version: {e}")
         return None
@@ -116,8 +117,8 @@ encrypted_private_key = access_secret_version(
     os.getenv("GPG_SECRET_ID"),
     "latest"
 )
-decoded_key = base64.b64decode(encrypted_private_key)
-private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", "latest", decoded_key)
+# decoded_key = base64.b64decode(encrypted_private_key)
+private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", decoded_key)
 
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
