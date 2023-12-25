@@ -11,6 +11,13 @@ from cloudevents.http import from_http
 
 from flask import Flask, request
 
+def decrypt_key(project_id, location, keyring_id, key_id, version_id, ciphertext):
+    client = kms_v1.KeyManagementServiceClient()
+    name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}/cryptoKeyVersions/{version_id}"
+    response = client.decrypt(name=name, ciphertext=ciphertext)
+    return response.plaintext
+
+
 def access_secret_version(project_id, secret_id, version_id):
     try:
         # Access the secret version
@@ -28,6 +35,13 @@ def access_secret_version(project_id, secret_id, version_id):
     except Exception as e:
         print(f"Error accessing secret version: {e}")
         return None
+
+def decrypt_key(project_id, location, keyring_id, key_id, version_id, ciphertext):
+    client = kms_v1.KeyManagementServiceClient()
+    name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}/cryptoKeyVersions/{version_id}"
+    response = client.decrypt(name=name, ciphertext=ciphertext)
+    return response.plaintext
+
 
 def read_gcs_file_to_string(bucket_name, source_blob_name):
     try:
@@ -103,11 +117,13 @@ app = Flask(__name__)
 
 # Set up GnuPG instance
 gpg = gnupg.GPG()
-private_key = access_secret_version(
+encrypted_private_key = access_secret_version(
     os.getenv("PROJECT_ID"),
     os.getenv("GPG_SECRET_ID"),
     "latest"
 )
+private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", "latest", encrypted_private_key)
+
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
 def index():
