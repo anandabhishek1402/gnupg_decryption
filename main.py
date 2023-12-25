@@ -6,13 +6,14 @@ import gnupg
 from datetime import datetime
 from google.cloud import secretmanager
 from google.cloud import storage
+from google.cloud import kms
 
 from cloudevents.http import from_http
 
 from flask import Flask, request
 
 def decrypt_key(project_id, location, keyring_id, key_id, version_id, ciphertext):
-    client = kms_v1.KeyManagementServiceClient()
+    client = kms.KeyManagementServiceClient()
     name = f"projects/{project_id}/locations/{location}/keyRings/{keyring_id}/cryptoKeys/{key_id}/cryptoKeyVersions/{version_id}"
     response = client.decrypt(name=name, ciphertext=ciphertext)
     return response.plaintext
