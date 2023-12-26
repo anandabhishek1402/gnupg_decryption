@@ -88,7 +88,7 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("PP :{}".format(pp))
         print("Passphrase: {}".format(pp))
         # Decrypt the data
-        decrypted_data = gpg.decrypt(encrypted_data, passphrase = pp) #  ) #pp.replace('\n', '')) #To remove \n from end
+        decrypted_data = gpg.decrypt(encrypted_data, passphrase = 'Fossil.4') #  ) #pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
         print("Decrypted Data")
         print(decrypted_data)
