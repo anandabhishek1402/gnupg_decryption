@@ -131,7 +131,7 @@ def upload_decrypted_to_gcs(destination_bucket, source_blob_name):
         #     destination_blob.upload_from_file(f)
 
         # With CSV Files
-        with open('/tmp/decrypted_data.txt', 'rb') as f:
+        with open('/tmp/decrypted_data.csv', 'rb') as f:
             destination_blob.upload_from_file(f)
     
         return 'OK', 200
