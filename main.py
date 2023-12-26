@@ -56,6 +56,7 @@ def read_gcs_file_to_string(bucket_name, source_blob_name):
 
         # Read the file content as a string
         file_content = blob.download_as_text() #str
+        file_content = blob.download_as_bytes() #csv
 
         return file_content
     
@@ -95,15 +96,20 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
             print("Decryption failed:", decrypted_data.status)
             return None
 
-        # Write the decrypted data to a file
+        # Write the decrypted data to a file (Working with Text Files)
         # with open('/tmp/decrypted_data.txt', 'wb') as f:
         #     f.write(decrypted_data.data)
 
         # print("Decrypted data written to /tmp/decrypted_data.txt")
         # return decrypted_data
+
+        # (Working with CSV Files)
+        decrypted_data_bytes = decrypted_data.data
+
         with open('/tmp/decrypted_data.csv', 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(decrypted_data.data.split(','))  # Assuming data is comma-separated
+            for line in decrypted_data_bytes.splitlines():
+                csv_writer.writerow(line.decode('utf-8').split(','))
 
         print("Decrypted data written to /tmp/decrypted_data.csv")
         return decrypted_data
@@ -118,7 +124,12 @@ def upload_decrypted_to_gcs(destination_bucket, source_blob_name):
         destination_blob_name = f'new_decrypted/{source_blob_name}'  # Modify as needed for the destination path
         destination_bucket = storage_client.bucket(destination_bucket_name)
         destination_blob = destination_bucket.blob(destination_blob_name)
-    
+
+        # With TXT Files
+        # with open('/tmp/decrypted_data.txt', 'rb') as f:
+        #     destination_blob.upload_from_file(f)
+
+        # With CSV Files
         with open('/tmp/decrypted_data.txt', 'rb') as f:
             destination_blob.upload_from_file(f)
     
