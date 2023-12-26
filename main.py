@@ -1,4 +1,4 @@
-import os
+ import os
 import base64
 import io
 import json
@@ -55,7 +55,7 @@ def read_gcs_file_to_string(bucket_name, source_blob_name):
         blob = bucket.blob(source_blob_name)
 
         # Read the file content as a string
-        file_content = blob.download_as_text() #str
+        # file_content = blob.download_as_text() #str
         file_content = blob.download_as_bytes() #csv
 
         return file_content
