@@ -86,7 +86,8 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         print("PP1 :{}".format(pp1))
         pp = decrypt_key("abhishek-anand-dev", "global", "gnupg_passphrase", "clidemo", pp1)
         print("PP :{}".format(pp))
-        print("Passphrase: {}".format(pp))
+        pp_length = len(pp)
+        print("Passphrase Length: {}".format(pp_length))
         # Decrypt the data
         decrypted_data = gpg.decrypt(encrypted_data, passphrase = pp) #  ) #pp.replace('\n', '')) #To remove \n from end
         # decrypted_data = gpg.decrypt(encrypted_data, passphrase=pp)
