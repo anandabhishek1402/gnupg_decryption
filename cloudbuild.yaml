@@ -1,7 +1,7 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/mm-etl-poc/gnupg-new:latest', '.' ,hello world]
+    args: [ 'build', '-t', 'gcr.io/mm-etl-poc/gnupg-new:latest', '.' ,hello world 123]
 
   # Push the Docker image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
