@@ -14,6 +14,7 @@ env:
   PASPPHRASE_SECRET_ID: "passphrase"
   DESTINATION_BUCKET: "gpg_encrypted_files_abhicyb"
   APP: app
+  REPO: my-ver-tf-repo
 
 jobs:
   deploy:
@@ -36,7 +37,7 @@ jobs:
       # Build and push Docker image using Cloud Build
       - name: Cloud Build
         run: |-
-          gcloud builds submit --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE}}:${{ github.sha }}" .
+          gcloud builds submit --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE}}:${{ github.sha }}" .
 
       - name: 'Render templatised config manifests'
         run: |-
@@ -61,7 +62,7 @@ jobs:
           region: '${{ env.GAR_LOCATION }}'
           #description: '${{ env.GITHUB_COMMIT_MSG }}'
           skaffold_file: 'config/skaffold.yaml'
-          images: 'app=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}'
+          images: 'app=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}'
 
       - name: 'Report Cloud Deploy release'
         run: |-
@@ -75,7 +76,7 @@ jobs:
       #     service: ${{ env.SERVICE }}
       #     region: ${{ env.REGION }}
       #     allow_unauthenticated: true
-      #     image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}"
+      #     image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}"
       #     env_vars: |
       #       PROJECT_ID=${{ env.PROJECT_ID }}
       #       GPG_SECRET_ID=${{ env.GPG_SECRET_ID }}
