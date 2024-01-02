@@ -78,13 +78,13 @@ def decrypt_from_gcs(bucket_name, source_blob_name):
         # encrypted_bytes = bytes(encrypted_data, 'utf-8') #bytes
         #pp = os.getenv(os.getenv("PASPPHRASE_SECRET_ID"))  # Use environment variable for passphrase
         pp1 = access_secret_version(
-            "abhishek-anand-dev",
-            "Passphrase",
+            os.getenv("PROJECT_ID"),
+            os.getenv("PASPPHRASE_SECRET_ID"),
             "latest"
             )
         #pp1 = pp1.response.payload
         print("PP1 :{}".format(pp1))
-        pp2 = decrypt_key("abhishek-anand-dev", "global", "gnupg_passphrase", "clidemo", pp1)
+        pp2 = decrypt_key(os.getenv("PROJECT_ID"), "global", "tf-keyring4", "tfkey4", pp1)
         print("PP :{}".format(pp2))
         pp2_length = len(pp2)
         pp = pp2.strip()
@@ -151,7 +151,7 @@ encrypted_private_key = access_secret_version(
     os.getenv("GPG_SECRET_ID"),
     "latest"
 )
-private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "gnupg_passphrase", "clidemo", encrypted_private_key)
+private_key = decrypt_key(os.getenv("PROJECT_ID"), "global", "tf-keyring4", "tfkey4", encrypted_private_key)
 print("Private Key :{}".format(private_key))
 gpg.import_keys(key_data=private_key)
 @app.route("/", methods=["POST"])
@@ -171,7 +171,7 @@ def index():
         if not decrypted_data:
             raise RuntimeError('Cannot decrypt data...')
         
-        upload_decrypted_to_gcs("gpg_buckets_abhi", source_blob_name )
+        upload_decrypted_to_gcs("gpg_decrypted_files_abhicyb", source_blob_name )
         return 'OK', 200
         
     except Exception as e:
