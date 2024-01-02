@@ -2,17 +2,17 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [ "final" ]
+    branches: [ "ver" ]
 
 env:
-  PROJECT_ID: "abhishek-anand-dev" # TODO: update Google Cloud project id
+  PROJECT_ID: "abhidhrk-ver" # TODO: update Google Cloud project id
   GAR_LOCATION: "us-central1" # TODO: update Artifact Registry location
   SERVICE: "gpg-decryption" # TODO: update Cloud Run service name
   REGION: "us-central1" # TODO: update Cloud Run service region
   IMAGE: "gpg"
-  GPG_SECRET_ID: "gpgkey" # TODO: update your environment variables
-  PASPPHRASE_SECRET_ID: "Passphrase"
-  DESTINATION_BUCKET: "gpg_buckets_abhi"
+  GPG_SECRET_ID: "privatekey" # TODO: update your environment variables
+  PASPPHRASE_SECRET_ID: "passphrase"
+  DESTINATION_BUCKET: "gpg_encrypted_files_abhicyb"
   APP: app
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
       - name: Google Auth
         uses: 'google-github-actions/auth@v0'
         with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          credentials_json: '${{ secrets.GCP_CRED }}'
 
       # Build and push Docker image using Cloud Build
       - name: Cloud Build
