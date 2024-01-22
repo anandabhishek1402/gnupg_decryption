@@ -1,6 +1,7 @@
 # Use the official Python 3.8 image as the base image
 FROM python:3.11-slim
 
+
 ARG APP_HOME=/home/app
 
 # Install GnuPG and required dependencies
