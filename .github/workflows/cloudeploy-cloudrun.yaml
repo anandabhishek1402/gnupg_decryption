@@ -37,7 +37,7 @@ jobs:
       # Build and push Docker image using Cloud Build
       - name: Cloud Build
         run: |-
-          gcloud builds submit --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE}}:${{ github.sha }}" .
+          gcloud builds submit --gcs-log-dir gs://build-logs-ver --tag "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE}}:${{ github.sha }}" .
 
       - name: 'Render templatised config manifests'
         run: |-
