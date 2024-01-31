@@ -18,3 +18,23 @@ COPY gunicorn_config.py /app
 # WORKDIR /app
 CMD ["gunicorn", "--config", "gunicorn_config.py", "main:app"]
 
+FROM python:3.7-slim AS build
+ADD . /app
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y gnupg
+
+RUN chmod u+x /app/main.py
+RUN chmod u+x /app/gunicorn_config.py
+RUN chmod u+x /app/requirements.txt
+RUN pip3 install --ignore-installed -r requirements.txt
+
+FROM gcr.io/distroless/python3-debian10
+COPY --from=build /app /app
+COPY --from=build /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
+
+WORKDIR /app
+ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
+CMD exec gunicorn --config gunicorn_config.py main:app
+# CMD ["gunicorn", "--config", "gunicorn_config.py", "main:app"]
