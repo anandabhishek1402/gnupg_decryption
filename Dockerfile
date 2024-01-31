@@ -1,37 +1,20 @@
-# Use the official Python 3.8 image as the base image
-FROM python:3.11-slim
+FROM debian:11-slim AS build
+RUN apt-get update && \
+    apt-get install --no-install-suggests --no-install-recommends --yes python3-venv gcc libpython3-dev && \
+    python3 -m venv /venv && \
+    apt-get install -y gnupg && \
+    /venv/bin/pip install --upgrade pip setuptools wheel
 
-ARG APP_HOME=/home/app
+# Build the virtualenv as a separate step: Only re-execute this step when requirements.txt changes
+FROM build AS build-venv
+COPY requirements.txt /requirements.txt
+RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
+WORKDIR /app
 
-# Install GnuPG and required dependencies
-RUN apt-get update && apt-get install -y gnupg
+FROM gcr.io/distroless/python3-debian9:latest
+COPY --from=build-venv /venv /venv
+COPY main.py /app
+COPY gunicorn_config.py /app
+# WORKDIR /app
+CMD ["gunicorn", "--config", "gunicorn_config.py", "main:app"]
 
-# Add user
-RUN groupadd -g 999 app && useradd -r -u 999 -g app app
-
-# Create and set the working directory
-WORKDIR ${APP_HOME}
-
-# create the gnupg directory
-RUN mkdir ${APP_HOME}/.gnupg && chmod 700 ${APP_HOME}/.gnupg
-
-# change permission to app user
-RUN chown -R app:app ${APP_HOME}
-
-# change to app user
-USER app
-
-# Copy requirements.txt and install the required Python packages
-COPY requirements.txt .
-RUN python -m venv venv
-RUN /bin/bash -c "source venv/bin/activate && pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt"
-
-# Copy the application code
-COPY main.py .
-COPY gunicorn_config.py .
-
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Start Gunicorn with the app module
-CMD ["/home/app/venv/bin/gunicorn", "--config", "gunicorn_config.py", "main:app"]
