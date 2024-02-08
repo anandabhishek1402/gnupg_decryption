@@ -2,6 +2,7 @@ FROM python:3.11-bookworm AS build
 RUN mkdir /home/app
 COPY main.py /home/app
 COPY requirements.txt /home/app
+COPY gunicorn_config.py /home/app
 WORKDIR /home/app
 RUN apt-get update && \
     apt-get install -y gnupg
@@ -20,9 +21,13 @@ COPY --from=build /lib/x86_64-linux-gnu/libreadline.so.8 /lib/x86_64-linux-gnu/l
 COPY --from=build /lib/x86_64-linux-gnu/libreadline.so.8.2 /lib/x86_64-linux-gnu/libreadline.so.8.2
 COPY --from=build /lib/x86_64-linux-gnu/libgpg-error.so.0.33.1 /lib/x86_64-linux-gnu/libgpg-error.so.0.33.1
 COPY --from=build /lib/x86_64-linux-gnu/libgpg-error.so.0 /lib/x86_64-linux-gnu/libgpg-error.so.0
+COPY --from=build /usr/lib/python3.11/http/ /usr/lib/python3.11/http/
 ENV PYTHONPATH=/usr/local/lib/python3.11:$PYTHONPATH
+ENV PYTHONPATH=/usr/lib/python3.11:$PYTHONPATH
+ENV PATH=/home/app/packages:${PATH}
 
 WORKDIR /home/app
 EXPOSE 8080
+ENTRYPOINT ["python3.11", "/home/app/packages/gunicorn/app/wsgiapp.py", "main:app", "-c", "gunicorn_config.py"]
 
-CMD ["main.py"]
+
