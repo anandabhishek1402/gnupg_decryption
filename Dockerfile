@@ -27,6 +27,18 @@ ENV PYTHONPATH=/usr/lib/python3.11:$PYTHONPATH
 ENV PATH=/home/app/packages:${PATH}
 
 WORKDIR /home/app
+
+# # COPY --from=build /usr/bin/gpg-agent /usr/bin/gpg-agent
+# # COPY --from=build /usr/bin/gpg-connect-agent /usr/bin/gpg-connect-agent
+# # COPY --from=build /usr/bin/gpg-wks-server /usr/bin/gpg-wks-server
+# # COPY --from=build /usr/bin/gpg-zip /usr/bin/gpg-zip
+# # COPY --from=build /usr/bin/gpgcompose /usr/bin/gpgcompose
+# # COPY --from=build /usr/bin/gpgconf /usr/bin/gpgconf
+# # COPY --from=build /usr/bin/gpgparsemail /usr/bin/gpgparsemail
+# # COPY --from=build /usr/bin/gpgsm /usr/bin/gpgsm
+# # COPY --from=build /usr/bin/gpgcompose /usr/bin/gpgsplit
+# # COPY --from=build /usr/bin/gpgcompose /usr/bin/gpgtar
+
 EXPOSE 8080
 ENTRYPOINT ["python3.11", "/home/app/packages/gunicorn/app/wsgiapp.py", "main:app", "-c", "gunicorn_config.py"]
 
