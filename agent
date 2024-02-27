@@ -1,0 +1,36 @@
+import subprocess
+import os
+import signal
+import time
+
+# Function to start gpg-agent
+def start_gpg_agent():
+    try:
+        # Start gpg-agent in the background
+        subprocess.Popen(['gpg-agent', '--daemon'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Wait for a short time to ensure gpg-agent has started
+        time.sleep(2)
+        print("gpg-agent started successfully.")
+    except Exception as e:
+        print(f"Error starting gpg-agent: {e}")
+
+# Function to stop gpg-agent
+def stop_gpg_agent():
+    try:
+        # Get the PID of gpg-agent
+        pid = int(subprocess.check_output(['gpgconf', '--list-dirs', 'agent-pid']).decode().strip())
+
+        # Send a SIGTERM signal to gpg-agent
+        os.kill(pid, signal.SIGTERM)
+        print("gpg-agent stopped successfully.")
+    except Exception as e:
+        print(f"Error stopping gpg-agent: {e}")
+
+# Example: Start gpg-agent
+start_gpg_agent()
+
+# Your GPG-related code here...
+
+# Example: Stop gpg-agent when done
+stop_gpg_agent()
